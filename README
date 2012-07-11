@@ -1,0 +1,6 @@
+CoverageEx is used to enhance python Coverage and provide some utilities.
+
+* Report Parser
+-----------------------
+This is used to parse the coverage report.
+This file was modified by PyCharm 2.5.2 for binding GitHub repository
