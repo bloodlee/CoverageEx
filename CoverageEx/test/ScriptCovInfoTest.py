@@ -7,7 +7,7 @@ from CoverageEx.report.ScriptCovInfo import ScriptCovInfo
 class ScriptCovInfoTest(unittest.TestCase):
 
     def testConstructor1(self):
-        info = ScriptCovInfo("script1")
+        info = ScriptCovInfo("script1", set())
 
         self.assertEqual(info.getScriptName(), "script1")
         self.assertEqual(info.getAllLines(), set())
