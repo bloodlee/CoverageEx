@@ -2,6 +2,7 @@ __author__ = 'jason'
 
 from xml.etree import ElementTree
 from CoverageEx.report.ScriptCovInfo import ScriptCovInfo
+from CoverageEx.common.Range import Range
 
 COV_CLASS_XPATH='packages/package/classes/class'
 LINE_RELATIVE_XPATH='lines/line'
@@ -37,3 +38,58 @@ class Parser:
             result[scriptName] = covInfo
 
         return result
+
+    @staticmethod
+    def mergeEmptyLines(fileCoverageInfo, fileEmptyLines):
+
+        scriptCoverRange = {}
+
+        for scriptName in fileCoverageInfo.keys():
+            emptyLines = []
+            if fileEmptyLines.has_key(scriptName):
+                emptyLines = fileEmptyLines[scriptName]
+                emptyLines.sort()
+
+            emptyLinesSet = set(emptyLines)
+
+            coverageLines = []
+            for x in fileCoverageInfo[scriptName].getAllLines(): coverageLines.append(x)
+            coverageLines.sort()
+            coverageLinesSet = set(coverageLines)
+
+            searchedLines = set()
+            coverageRange = []
+
+            for startLine in coverageLines:
+
+                if startLine in searchedLines:
+                    continue
+
+                lineCounter = startLine
+                endLine = startLine
+
+                # check if next line is a empty line or a coverage line
+                lineCounter += 1
+                while True:
+                    isEmptyLine = lineCounter in emptyLinesSet
+                    isCoverageLine = lineCounter in coverageLinesSet
+
+                    if isCoverageLine:
+                        endLine = lineCounter
+                        searchedLines.add(lineCounter)
+                    elif isEmptyLine:
+                        endLine = lineCounter
+                    else:
+                        break
+
+                    endLine = lineCounter
+                    lineCounter += 1
+
+                newRange = Range(startLine, endLine)
+
+                coverageRange.append(newRange)
+
+            scriptCoverRange[scriptName] = coverageRange
+
+
+        return scriptCoverRange
