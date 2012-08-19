@@ -9,14 +9,14 @@ class RangeTest(unittest.TestCase):
         self.aRange = Range(1, 10)
 
     def testInit(self):
-        self.assertEqual(self.aRange.getBegin(), 1)
-        self.assertEqual(self.aRange.getEnd(), 10)
+        self.assertEqual(self.aRange.getFirst(), 1)
+        self.assertEqual(self.aRange.getLast(), 10)
 
     def testInRange(self):
-        self.assertTrue(self.aRange.inRange(1))
-        self.assertTrue(self.aRange.inRange(10))
-        self.assertTrue(self.aRange.inRange(5))
-        self.assertFalse(self.aRange.inRange(0))
-        self.assertFalse(self.aRange.inRange(11))
+        self.assertTrue(self.aRange.contains(1))
+        self.assertTrue(self.aRange.contains(10))
+        self.assertTrue(self.aRange.contains(5))
+        self.assertFalse(self.aRange.contains(0))
+        self.assertFalse(self.aRange.contains(11))
 
 

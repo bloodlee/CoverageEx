@@ -1,5 +1,7 @@
 __author__ = 'jason'
 
+from CoverageEx.common.Range import Range
+
 class ScriptCovInfo:
     """
     Class which is used to store the information of script coverage.
@@ -11,6 +13,7 @@ class ScriptCovInfo:
         """
         self.scriptName = scriptName
         self.lines = lines
+        self.ranges = []
 
     def getScriptName(self):
         """
@@ -24,6 +27,12 @@ class ScriptCovInfo:
         """
         self.lines.add(lineNo)
 
+    def addRange(self, range):
+        """
+        Add a coverage range.
+        """
+        self.ranges.add(range)
+
     def containLine(self, lineNo):
         """
         Test whether the give line number is contained.
@@ -35,6 +44,9 @@ class ScriptCovInfo:
         Get all lines.
         """
         return self.lines
+
+    def getAllRanges(self):
+        return self.ranges
 
     def lineCount(self):
         """

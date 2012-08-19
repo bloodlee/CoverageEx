@@ -89,6 +89,8 @@ class Parser:
 
                 coverageRange.append(newRange)
 
+                fileCoverageInfo[scriptName].addRange(newRange)
+
             scriptCoverRange[scriptName] = coverageRange
 
 

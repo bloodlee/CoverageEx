@@ -1,20 +1,31 @@
 __author__ = 'jasonlee'
 
 class Range:
-    def __init__(self, begin, end):
-        self.begin = begin
-        self.end = end
+    def __init__(self, first, last):
+        self.first = first
+        self.last = last
 
-    def getBegin(self):
-        return self.begin
+    def getFirst(self):
+        return self.first
 
-    def getEnd(self):
-        return self.end
+    def getLast(self):
+        return self.last
 
-    def inRange(self, num):
-        return num >= self.begin and num <= self.end
+    def contains(self, num):
+        return num >= self.first and num <= self.last
+
+    def hasInsect(self, otherRange):
+        return not (self.last > otherRange.getFirst() or self.first < otherRange.getLast())
 
     def __eq__(self, other):
-        return self.begin == other.getBegin() and self.end == other.getEnd()
+        return self.first == other.getFirst() and self.last == other.getLast()
 
+    def __lt__(self, other):
+        return self.first > other.getFirst
+
+    def __str__(self):
+        if self.first == self.last:
+            return self.first
+        else:
+            return "%d-%d" % (self.first, self.last)
 

@@ -3,6 +3,7 @@ __author__ = 'jasonlee'
 import sqlite3
 import string
 from CoverageEx.report.ScriptCovInfo import ScriptCovInfo
+from CoverageEx.common.CaseInfo import CaseInfo
 
 class TestCaseDB:
 
@@ -10,11 +11,22 @@ class TestCaseDB:
 
     CREATE_COVERAGE_TABLE_SQL="""
     CREATE TABLE IF NOT EXISTS {0}
-    (case_seq INT,
+    (case_seq INTEGER PRIMARY KEY AUTOINCREMENT,
     package VARCHAR(255) DEFAULT NULL,
     file VARCHAR(255) DEFAULT '',
-    line TEXT)
+    line TEXT,
+    last_changelist INT)
     """.format(CASE_COVERAGE_TABLE_NAME)
+
+    CASE_TABLE_NAME = "test_cases"
+
+    CREATE_CASE_TABLE_SQL = """
+    CREATE TABLE IF NOT EXISTS {0}
+    (case_seq INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_name VARCHAR(255),
+    case_command VARCHAR(255),
+    last_cl INT DEFAULT 0)
+    """.format(CASE_TABLE_NAME)
 
     def __init__(self, dbName):
         self.dbName = dbName
@@ -22,7 +34,68 @@ class TestCaseDB:
         self.conn = sqlite3.connect(self.dbName)
 
         c = self.conn.cursor()
+
         c.execute(TestCaseDB.CREATE_COVERAGE_TABLE_SQL)
+        c.execute(TestCaseDB.CREATE_CASE_TABLE_SQL)
+
+        self.conn.commit()
+
+    def closeDB(self):
+        self.conn.close()
+
+    def initDB(self):
+        c = self.conn.cursor()
+
+        c.execute('DROP TABLE {0}'.format(TestCaseDB.CASE_COVERAGE_TABLE_NAME))
+        c.execute(TestCaseDB.CREATE_COVERAGE_TABLE_SQL)
+        c.execute('DROP TABLE {0}'.format(TestCaseDB.CASE_TABLE_NAME))
+        c.execute(TestCaseDB.CREATE_CASE_TABLE_SQL)
+
+        self.conn.commit()
+
+    def addCase(self, name, command):
+        """
+        Add case
+        """
+
+        c = self.conn.cursor()
+
+        insert_sql = """
+        INSERT INTO %s
+        (case_name, case_command) values
+        (?, ?)
+        """ % (TestCaseDB.CASE_TABLE_NAME)
+
+        c.execute(insert_sql, (name, command))
+
+        self.conn.commit()
+
+    def getCaseInfo(self):
+        """
+        Get case info.
+        """
+        c = self.conn.cursor()
+
+        SELECT_SQL = """
+        SELECT * FROM {0}
+        """.format(TestCaseDB.CASE_TABLE_NAME)
+
+        rows = c.execute(SELECT_SQL)
+
+        cases = []
+        for row in rows:
+            testCase = CaseInfo(row[0], row[1], row[2], row[3])
+            cases.append(testCase)
+
+        return cases
+
+    def refreshCaseInfo(self, testCaseSeq, last_cl):
+        # update the last cl.
+        c = self.conn.cursor()
+
+        command = 'UPDATE %s SET last_cl = ? WHERE case_seq = ?' % TestCaseDB.CASE_TABLE_NAME
+        c.execute(command, (last_cl, testCaseSeq))
+
         self.conn.commit()
 
     def refreshCoverageData(self, testCaseSeq, covInfo):
