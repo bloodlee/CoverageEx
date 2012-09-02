@@ -4,6 +4,9 @@ import sqlite3
 import string
 from CoverageEx.report.ScriptCovInfo import ScriptCovInfo
 from CoverageEx.common.CaseInfo import CaseInfo
+import string
+from CoverageEx.common.CoverageRange import CoverageRange
+from CoverageEx.common.Range import Range
 
 class TestCaseDB:
 
@@ -121,7 +124,7 @@ class TestCaseDB:
             INSERT INTO {0}
             (case_seq, file, line)
             VALUES ({1}, '{2}', '{3}')
-            """.format(TestCaseDB.CASE_COVERAGE_TABLE_NAME, testCaseSeq, aFile, str(aCovInfo.getAllLines())[5:-2])
+            """.format(TestCaseDB.CASE_COVERAGE_TABLE_NAME, testCaseSeq, aFile, string.join([str(aRange) for aRange in aCovInfo.getAllRanges()], ','))
 
             c.execute(INSERT_SQL)
 
@@ -143,7 +146,12 @@ class TestCaseDB:
             scriptName = row[0]
             lineSet = set(string.split(row[1]))
 
-            covInfo = ScriptCovInfo(scriptName, lineSet)
+            rangeSet = []
+            for aLine in lineSet:
+                rangeSet.append(Range.parseFrom(aLine))
+            rangeSet.sort()
+
+            covInfo = CoverageRange(scriptName, rangeSet)
 
             result[scriptName] = covInfo
 

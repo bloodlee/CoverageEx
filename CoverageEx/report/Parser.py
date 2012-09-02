@@ -3,6 +3,7 @@ __author__ = 'jason'
 from xml.etree import ElementTree
 from CoverageEx.report.ScriptCovInfo import ScriptCovInfo
 from CoverageEx.common.Range import Range
+from CoverageEx.common.CoverageRange import CoverageRange
 
 COV_CLASS_XPATH='packages/package/classes/class'
 LINE_RELATIVE_XPATH='lines/line'
@@ -89,9 +90,6 @@ class Parser:
 
                 coverageRange.append(newRange)
 
-                fileCoverageInfo[scriptName].addRange(newRange)
-
-            scriptCoverRange[scriptName] = coverageRange
-
+            scriptCoverRange[scriptName] = CoverageRange(scriptName, coverageRange)
 
         return scriptCoverRange
